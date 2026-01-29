@@ -20,9 +20,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AnimationHomePage extends StatelessWidget {
+class AnimationHomePage extends StatefulWidget {
   const AnimationHomePage({super.key});
 
+  @override
+  State<AnimationHomePage> createState() => _AnimationHomePageState();
+}
+
+class _AnimationHomePageState extends State<AnimationHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +38,12 @@ class AnimationHomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const FadeInSection(),
-            const SlideInSection(),
-            const ScaleSection(),
-            const RotationSection(),
-            const PulseSection(),
+            FadeInSection(),
+            SlideInSection(),
+            ScaleSection(),
+            RotationSection(),
+            PulseSection(),
+            const CircularProgressSection(),
           ],
         ),
       ),
@@ -405,6 +411,79 @@ class _PulseSectionState extends State<PulseSection>
                   size: 40,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CircularProgressSection extends StatefulWidget {
+  const CircularProgressSection({super.key});
+
+  @override
+  State<CircularProgressSection> createState() => _CircularProgressSectionState();
+}
+
+class _CircularProgressSectionState extends State<CircularProgressSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    );
+    _controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.teal[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.teal[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Circular Progress Animation',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: CircularProgressIndicator(
+                    value: _animation.value,
+                    strokeWidth: 8,
+                    backgroundColor: Colors.teal[100],
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.teal[400]!),
+                  ),
+                );
+              },
             ),
           ),
         ],
